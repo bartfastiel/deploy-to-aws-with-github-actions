@@ -1,0 +1,76 @@
+name: "Deploy Talents App"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment (staging,production)"
+        required: true
+        default: "staging"
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Build with maven
+        run: mvn -B package --file backend/pom.xml
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app.jar
+          path: backend/target/app.jar
+
+  build-zip:
+    runs-on: ubuntu-latest
+    needs: build-backend
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: app.jar
+          path: backend/target
+
+      - name: Create zip
+        run: zip app.zip Dockerfile backend/target/app.jar
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app.zip
+          path: .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-zip
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: app.zip
+          path: .
+
+      - name: Get current timestamp
+        id: timestamp
+        run: echo "TIMESTAMP=$(date +%s%N)" >> $GITHUB_OUTPUT
+
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: deploy-to-aws-with-github-actions
+          environment_name: Deploy-to-aws-with-github-action-env
+          region: eu-central-1
+          version_label: ${{github.sha}}-${{steps.timestamp.outputs.TIMESTAMP}}
+          deployment_package: app.zip

@@ -17,6 +17,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+          cache: 'maven'
 
       - name: Build with maven
         run: mvn -B package --file backend/pom.xml

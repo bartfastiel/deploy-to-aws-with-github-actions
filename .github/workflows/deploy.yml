@@ -52,6 +52,7 @@ jobs:
         with:
           push: true
           tags: bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+          file: backend/target/app.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,7 +65,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-              docker stop app
-              docker rm app
-              docker pull bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
-              docker run -d -p 8080:8080 --name app bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+            docker stop app
+            docker rm app
+            docker pull bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+            docker run -d -p 8080:8080 --name app bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}

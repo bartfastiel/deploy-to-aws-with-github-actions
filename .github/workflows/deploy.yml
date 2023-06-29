@@ -53,6 +53,7 @@ jobs:
           push: true
           tags: bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
           file: backend/target/app.jar
+          context: .
 
   deploy:
     runs-on: ubuntu-latest

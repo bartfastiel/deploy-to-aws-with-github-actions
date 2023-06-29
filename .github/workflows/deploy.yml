@@ -1,0 +1,70 @@
+name: "Deploy App"
+
+on:
+  push:
+    branches:
+      - main
+      - docker-on-ec2
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Build with maven
+        run: mvn -B package --file backend/pom.xml
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app.jar
+          path: backend/target/app.jar
+
+  push-to-docker-hub:
+    runs-on: ubuntu-latest
+    needs: build-backend
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: app.jar
+          path: backend/target/app.jar
+
+      - name: List directory
+        run: ls -R && pwd
+
+      - name: show env variables
+        run: env && echo UNSER TAG bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: bartfastiel
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push-to-docker-hub
+    steps:
+      - name: Restart docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+              docker stop app
+              docker rm app
+              docker pull bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+              docker run -d -p 8080:8080 --name app bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}

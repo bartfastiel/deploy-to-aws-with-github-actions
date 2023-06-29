@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-deployment-name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: your-app-label
+  template:
+    metadata:
+      labels:
+        app: your-app-label
+    spec:
+      containers:
+        - name: your-container-name
+          image: bartfastiel/deploy-to-aws-with-github-actions:latest
+          ports:
+            - containerPort: 8080

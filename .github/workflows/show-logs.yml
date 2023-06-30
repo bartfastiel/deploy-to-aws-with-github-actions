@@ -1,4 +1,4 @@
-name: "Deploy App"
+name: "Get Logs"
 
 on:
   workflow_dispatch:

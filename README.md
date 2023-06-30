@@ -22,7 +22,7 @@
 * ssh to EC2 instance
 * `docker stop alpha`
 * `docker rm alpha`
-* `docker run --pull=always --name alpha --network capstones --detach bartfastiel/deploy-to-aws-with-github-actions:latest`
+* `docker run --pull=always --name alpha --network capstones --ip 10.0.1.1 --detach bartfastiel/deploy-to-aws-with-github-actions:latest`
 
 ### reverse proxy
 

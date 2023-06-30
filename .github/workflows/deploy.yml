@@ -50,7 +50,7 @@ jobs:
         with:
           push: true
           #Set dockerhub username/projectName
-          tags: bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+          tags: bartfastiel/deploy-to-aws-with-github-action:latest
           context: .
 
   deploy:
@@ -67,7 +67,8 @@ jobs:
           #Set dockerhub project
           #Set Port
           script: |
-            docker stop app
-            docker rm app
-            docker pull bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
-            docker run -d -p 8080:8080 --name app bartfastiel/deploy-to-aws-with-github-action:${{github.sha}}
+            docker stop alpha
+            docker rm alpha
+            docker run --pull=always --name alpha --network capstones --ip 10.0.1.1 --detach bartfastiel/deploy-to-aws-with-github-actions:latest
+            sleep 5s
+            docker logs alpha

@@ -43,7 +43,7 @@ jobs:
         with:
           #Set dockerhub username
           username: bartfastiel
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -60,9 +60,10 @@ jobs:
       - name: Restart docker container
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          host: capstone-project.de
+          #Set App Name ("alpha" - "tango")
+          username: alpha
+          password: ${{ secrets.SSH_PASSWORD }}
           #Set App Name ("alpha" - "tango")
           #Set dockerhub project
           #Set IP ("10.0.1.1" - "10.0.1.20")

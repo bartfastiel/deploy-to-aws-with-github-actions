@@ -12,7 +12,8 @@
    * `sudo service docker start`
    * `sudo usermod --append --groups docker ec2-user`
    * `newgrp docker`
-   * `docker run --pull=always --publish 55001:8080 --name app --network mynetwork --detach bartfastiel/deploy-to-aws-with-github-actions:latest`
+   * `docker network create capstones`
+   * `docker run --pull=always --name app-alpha --network capstones --detach bartfastiel/deploy-to-aws-with-github-actions:latest`
 3. Test
     * Open browser and go to EC2 instance public IP address (double check, that you use http:// and not https://)
 
@@ -21,11 +22,11 @@
 * ssh to EC2 instance
 * `docker stop app`
 * `docker rm app`
-* `docker run --pull=always --publish 55001:8080 --name app --network mynetwork --detach bartfastiel/deploy-to-aws-with-github-actions:latest`
+* `docker run --pull=always --name app --network capstones --detach bartfastiel/deploy-to-aws-with-github-actions:latest`
 
 ### reverse proxy
 
-* `docker run --pull=always --publish 80:80 --name nginx --network mynetwork --detach bartfastiel/deploy-to-aws-with-github-actions-nginx:latest`
+* `docker run --pull=always --publish 80:80 --name nginx --network capstones --detach bartfastiel/deploy-to-aws-with-github-actions-nginx:latest`
 
 ## building
 

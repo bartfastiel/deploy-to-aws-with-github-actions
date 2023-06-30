@@ -1,0 +1,24 @@
+name: "Deploy App"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restart docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: capstone-project.de
+          #Set App Name ("alpha" - "tango")
+          username: alpha
+          password: ${{ secrets.SSH_PASSWORD }}
+          #Set App Name ("alpha" - "tango")
+          script: |
+            docker logs alpha
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v3
+        with:
+          #Set App Name ("alpha" - "tango")
+          url: http://alpha.capstone-project.de
+          max-attempts: 3
+          retry-delay: 5s
+          retry-all: true

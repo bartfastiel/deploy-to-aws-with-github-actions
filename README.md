@@ -41,3 +41,7 @@
 
 * in `nginx` folder
 * `docker buildx build --platform linux/amd64 --push --tag bartfastiel/deploy-to-aws-with-github-actions-nginx .`
+
+# certificate from letsencrypt
+
+* `sudo docker run --env AWS_ACCESS_KEY_ID=<FIXME> --env AWS_SECRET_ACCESS_KEY=<FIMXE> --interactive --tty --rm --name certbot --volume "/etc/letsencrypt:/etc/letsencrypt" --volume "/var/lib/letsencrypt:/var/lib/letsencrypt" certbot/dns-route53 certonly --dns-route53 --domain *.capstone-project.de --domain capstone-project.de`
